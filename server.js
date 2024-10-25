@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+const pool = require('./db');
 
 const app = express();
 const server = http.createServer(app);
@@ -13,7 +14,7 @@ app.use(express.static('public'));
 
 // Socket.io connection
 io.on('connection', (socket) => {
-    console.log('New user connected');
+    console.log('Database accessed...');
 
     // Create a new chatroom
     socket.on('createRoom', (roomName) => {
