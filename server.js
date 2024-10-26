@@ -12,9 +12,25 @@ let chatRooms = {};
 // Serve static files
 app.use(express.static('public'));
 
+// Route to access the database
+const connectDb = async () => {
+    try {
+        const client = await pool.connect();
+        if(client) {
+            console.log('Connected to DB');
+            client.release();
+        }
+        else {
+            console.log('Not connected to DB');
+        }
+    } catch (err) {
+        console.error('Error connecting to the database:', err);
+    }
+};
+
 // Socket.io connection
 io.on('connection', (socket) => {
-    console.log('Database accessed...');
+    connectDb();
 
     // Create a new chatroom
     socket.on('createRoom', (roomName) => {
