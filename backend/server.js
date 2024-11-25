@@ -17,12 +17,13 @@ let chatRooms = {};
 app.use(express.static('public'));
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.json());
 
 const users = [
     {
       id: 1,
-      email: 'user@example.com',
-      password: bcrypt.hashSync('password', 8), // hashed password
+      email: 'ehmaddd@gmail.com',
+      password: bcrypt.hashSync('abc', 8), // hashed password
     },
   ];
 
@@ -86,20 +87,20 @@ io.on('connection', (socket) => {
 // Authentication route
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
-    console.log(email, password);
-    // const user = users.find((u) => u.email === email);
+
+    const user = users.find((u) => u.email === email);
   
-    // if (!user) {
-    //   return res.status(404).send({ message: 'User not found.' });
-    // }
+    if (!user) {
+      return res.status(404).send({ message: 'User not found.' });
+    }
   
-    // const passwordIsValid = bcrypt.compareSync(password, user.password);
-    // if (!passwordIsValid) {
-    //   return res.status(401).send({ token: null, message: 'Invalid Password!' });
-    // }
+    const passwordIsValid = bcrypt.compareSync(password, user.password);
+    if (!passwordIsValid) {
+      return res.status(401).send({ token: null, message: 'Invalid Password!' });
+    }
   
-    // const token = jwt.sign({ id: user.id }, 'your_jwt_secret', { expiresIn: 86400 }); // 24 hours
-    // res.status(200).send({ id: user.id, email: user.email, token });
+    const token = jwt.sign({ id: user.id }, 'your_jwt_secret', { expiresIn: 86400 }); // 24 hours
+    res.status(200).send({ id: user.id, email: user.email, token });
   });
 
 // Start the server
