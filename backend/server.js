@@ -91,12 +91,15 @@ app.post('/login', (req, res) => {
     const user = users.find((u) => u.email === email);
   
     const passwordIsValid = bcrypt.compareSync(password, user.password);
+
     if (!passwordIsValid) {
       console.log("Password invalid");
+      return;
     }
-  
-    const token = jwt.sign({ id: user.id }, 'your_jwt_secret', { expiresIn: 86400 });
-    res.status(200).send({ id: user.id, email: user.email, token });
+    else {
+      const token = jwt.sign({ id: user.id }, 'your_jwt_secret', { expiresIn: 86400 });
+      res.status(200).send({ id: user.id, email: user.email, token });
+    }
   });
 
 // Start the server
