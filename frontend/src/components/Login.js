@@ -12,7 +12,7 @@ const Login = () => {
           email,
           password
       });
-      console.log(response);
+      console.log(response.data);
     }
 
     return (
