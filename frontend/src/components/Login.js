@@ -9,15 +9,20 @@ const Login = () => {
 
     const handleSubmit = async (e)=> {
       e.preventDefault();
-      const response = await axios.post('http://localhost:3000/login', 
+      try {
+        const response = await axios.post('http://localhost:3000/login', 
         {
           email,
           password
-      });
-      if(response.data.id){
-        setResult('Login Successful');
-      }
-      else {
+        });
+        if(response.data.id){
+          setResult('Login Successful');
+          console.log(response.data);
+        }
+        else {
+          setResult('Login Failed');
+        }
+      } catch {
         setResult('Login Failed');
       }
     }
