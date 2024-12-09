@@ -1,0 +1,7 @@
+.message.success {
+    background-color: yellowgreen;
+  }
+  
+  .message.failure {
+    background-color: rosybrown;
+  }
