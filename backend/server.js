@@ -93,7 +93,7 @@ app.post('/login', (req, res) => {
     const passwordIsValid = bcrypt.compareSync(password, user.password);
 
     if (!passwordIsValid) {
-      console.log("Password invalid");
+      res.status(200).send('wrong password');
       return;
     }
     else {
