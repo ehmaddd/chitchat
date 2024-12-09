@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Login.css';
 
@@ -22,13 +22,10 @@ const Login = () => {
       }
     }
 
-    const backgroundColor =
-    result === 'Login Successful' ? 'green' : result === 'Login Failed' ? 'red' : 'transparent';
-
     return (
         <>
           <h1>Login</h1>
-          <p className="message" style={{ backgroundColor }}>{result}</p>
+          <p className={(result==='Login Successful')?'message-success':'message-failure'} >{result}</p>
           <form>
               <label htmlFor="email">Email: </label>
               <input type="text" name="email" onChange={(e) => setEmail(e.target.value)} />

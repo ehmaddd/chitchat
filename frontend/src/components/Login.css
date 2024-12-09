@@ -1,7 +1,11 @@
-.message.success {
-    background-color: yellowgreen;
-  }
+.message-success {
+  width: 20%;
+  margin: auto;
+  background-color: greenyellow;
+}
   
-  .message.failure {
-    background-color: rosybrown;
-  }
+.message-failure {
+  width: 20%;
+  margin: auto;
+  background-color: palevioletred;
+}
