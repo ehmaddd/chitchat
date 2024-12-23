@@ -9,7 +9,15 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [result, setResult] = useState('');
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const logout = () => {
+    setEmail('');
+    setPassword('');
+    setResult('');
+    setIsLoggedIn(false);
+  }
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
