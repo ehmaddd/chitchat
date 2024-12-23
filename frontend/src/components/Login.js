@@ -32,6 +32,13 @@ const Login = () => {
       }
     }
 
+    const logout = () => {
+      setEmail('');
+      setPassword('');
+      setResult('');
+      setIsLoggedIn(false);
+    }
+
     return (
         <>
           {!isLoggedIn ? (
@@ -46,11 +53,13 @@ const Login = () => {
                 <input type="password" name="password" onChange={(e) => setPassword(e.target.value)} />
                 <br></br>
                 <input type="submit" value="Login" onClick={(e)=>handleSubmit(e)} />
-                <button onClick={logout}>LogOut</button>
             </form>
           </>
           ) : (
-            <Chat />
+            <>
+              <Chat />
+              <button onClick={logout}>LogOut</button>
+            </>
           )}
         </>
     );
