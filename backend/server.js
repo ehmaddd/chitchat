@@ -78,9 +78,7 @@ app.get('/rooms/:room/messages', async (req, res) => {
         }
 
         const roomId = targetroom.rows[0].roomid;
-        console.log(roomId);
         const result = await pool.query('SELECT * FROM messages WHERE roomid = $1', [roomId]);
-        console.log(result.rows);
 
         const messages = result.rows.map(row => ({
             text: row.content,
@@ -88,7 +86,7 @@ app.get('/rooms/:room/messages', async (req, res) => {
             date: row.createdat
         }));
 
-        // res.json(messages);
+        res.json(messages);
     } catch (error) {
         console.error('Error fetching messages:', error);
         res.status(500).send('Error fetching messages');
