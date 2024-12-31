@@ -90,7 +90,6 @@ const Chat = () => {
                         onChange={(e) => setRoom(e.target.value)}
                     />
                     <button onClick={handleCreateRoom}>Create Room</button>
-                    <button onClick={fetchRooms}>Fetch Rooms</button>
                     <h2>Available Rooms</h2>
                     <ul>
                       {Array.isArray(rooms) ? (
