@@ -54,6 +54,10 @@ app.post('/login', (req, res) => {
     res.status(200).send({ id: user.id, email: user.email, token });
 });
 
+app.get('/fetch_rooms', (req, res) => {
+    
+});
+
 // Use socketio-jwt to authenticate users via their JWT token
 io.use(socketJwt.authorize({
     secret: 'your_jwt_secret',   // Your secret key
