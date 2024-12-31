@@ -5,7 +5,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const http = require('http');
 const socketIo = require('socket.io');
-const socketJwt = require('socketio-jwt'); // Ensure this is imported correctly
+const socketJwt = require('socketio-jwt');
+const pool = require('./db');
 
 const app = express();
 const server = http.createServer(app);
@@ -54,8 +55,15 @@ app.post('/login', (req, res) => {
     res.status(200).send({ id: user.id, email: user.email, token });
 });
 
-app.get('/fetch_rooms', (req, res) => {
-    
+app.get('/fetch_rooms', async (req, res) => {
+  try {
+      const result = await pool.query('SELECT * FROM rooms');
+      const rooms = result.rows.map((row) => row.roomname);
+      res.status(200).json({ rooms });
+  } catch (error) {
+      console.error('Error fetching rooms:', error);
+      res.status(500).send('Error fetching rooms');
+  }
 });
 
 // Use socketio-jwt to authenticate users via their JWT token

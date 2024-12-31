@@ -29,11 +29,23 @@ const Chat = () => {
     }, []);
 
     const fetchRooms = async () => {
-        // Fetch available rooms from the server
-        const response = await fetch('http://localhost:3000/fetch_rooms');
-        const data = await response.json();
-        setRooms(data);
+        try {
+            const response = await fetch('http://localhost:3000/fetch_rooms');
+            const data = await response.json();
+            if (Array.isArray(data.rooms)) {
+                setRooms(data.rooms); // Set rooms state with the fetched array
+            } else {
+                console.error('Unexpected response format:', data);
+                setRooms([]); // Fallback to an empty array
+            }
+        } catch (error) {
+            console.error('Error fetching rooms:', error);
+            setRooms([]); // Fallback to an empty array on error
+        }
     };
+    useEffect(() => {
+        fetchRooms();
+    }, []);
 
     const handleCreateRoom = () => {
         if (room) {
@@ -81,11 +93,11 @@ const Chat = () => {
                     <button onClick={fetchRooms}>Fetch Rooms</button>
                     <h2>Available Rooms</h2>
                     <ul>
-                        {rooms.map((r, index) => (
-                            <li key={index}>
-                                {r} <button onClick={() => handleJoinRoom(r)}>Join</button>
-                            </li>
-                        ))}
+                      {Array.isArray(rooms) ? (
+                          rooms.map((room, index) => <li key={index}>{room}</li>)
+                      ) : (
+                          <li>No rooms available</li>
+                      )}
                     </ul>
                 </div>
             ) : (
