@@ -55,6 +55,7 @@ app.post('/login', (req, res) => {
     res.status(200).send({ id: user.id, email: user.email, token });
 });
 
+// Route to fetch rooms
 app.get('/fetch_rooms', async (req, res) => {
   try {
       const result = await pool.query('SELECT * FROM rooms');
@@ -64,6 +65,34 @@ app.get('/fetch_rooms', async (req, res) => {
       console.error('Error fetching rooms:', error);
       res.status(500).send('Error fetching rooms');
   }
+});
+
+// Fetch messages for a room
+app.get('/rooms/:room/messages', async (req, res) => {
+    const { room } = req.params;
+
+    try {
+        const targetroom = await pool.query('SELECT roomid FROM rooms WHERE roomname = $1', [room]);
+        if (targetroom.rows.length === 0) {
+            return res.status(404).send('Room not found');
+        }
+
+        const roomId = targetroom.rows[0].roomid;
+        console.log(roomId);
+        const result = await pool.query('SELECT * FROM messages WHERE roomid = $1', [roomId]);
+        console.log(result.rows);
+
+        const messages = result.rows.map(row => ({
+            text: row.content,
+            sender: row.userid,
+            date: row.createdat
+        }));
+
+        // res.json(messages);
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        res.status(500).send('Error fetching messages');
+    }
 });
 
 // Use socketio-jwt to authenticate users via their JWT token
@@ -76,26 +105,19 @@ io.use(socketJwt.authorize({
 io.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`);
 
-    socket.on('createRoom', (roomName) => {
-        if (!chatRooms[roomName]) {
-            chatRooms[roomName] = [];
-            socket.join(roomName);
-            socket.emit('roomCreated', roomName);
-            console.log(`Room created: ${roomName}`);
-        } else {
-            socket.emit('roomExists', roomName);
-        }
-    });
-
-    socket.on('joinRoom', (roomName) => {
+    socket.on('joinRoom', (roomName, callback) => {
+        console.log(`Attempting to join room: ${roomName}`);
+    
         if (chatRooms[roomName]) {
             socket.join(roomName);
             chatRooms[roomName].push(socket.id);
-            socket.emit('joinedRoom', roomName);
+    
+            callback('Successfully joined the room');
             io.to(roomName).emit('message', `A new user has joined the room: ${roomName}`);
             console.log(`User joined room: ${roomName}`);
         } else {
-            socket.emit('roomNotFound', roomName);
+            callback('Room not found');
+            console.log('Room not found:', roomName);
         }
     });
 

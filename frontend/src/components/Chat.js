@@ -57,18 +57,21 @@ const Chat = () => {
         }
     };
 
-    const handleJoinRoom = (selectedRoom) => {
-        socket.current.emit('joinRoom', selectedRoom, (response) => {
-            if (response === 'Room joined') {
-                setRoomJoined(true);
-                setRoom(selectedRoom);
-
-                // Fetch previous messages for the room
-                fetch(`http://localhost:3000/api/rooms/${selectedRoom}/messages`)
-                    .then((res) => res.json())
-                    .then((data) => setMessages(data));
+    const handleJoinRoom = async (selectedRoom) => {
+        console.log(`Attempting to join room: ${selectedRoom}`); // Debug log
+    
+        try {
+            const response = await fetch(`http://localhost:3000/rooms/${selectedRoom}/messages`);
+            if (!response.ok) {
+                console.error('Failed to fetch messages:', response.statusText);
+                return;
             }
-        });
+            const data = await response.json();
+            setMessages(data); // Update the messages state
+            console.log('Messages fetched:', data);
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+        }
     };
 
     const handleSendMessage = () => {
@@ -92,11 +95,16 @@ const Chat = () => {
                     <button onClick={handleCreateRoom}>Create Room</button>
                     <h2>Available Rooms</h2>
                     <ul>
-                      {Array.isArray(rooms) ? (
-                          rooms.map((room, index) => <li key={index}>{room}</li>)
-                      ) : (
-                          <li>No rooms available</li>
-                      )}
+                        {Array.isArray(rooms) ? (
+                            rooms.map((room, index) => (
+                                <li key={index}>
+                                    {room}{' '}
+                                    <button onClick={() => handleJoinRoom(room)}>Join</button>
+                                </li>
+                            ))
+                        ) : (
+                            <li>No rooms available</li>
+                        )}
                     </ul>
                 </div>
             ) : (
@@ -116,10 +124,10 @@ const Chat = () => {
             <div>
                 <h2>Messages</h2>
                 <ul>
-                    {messages.map((msg, index) => (
-                        <li key={index}>{msg}</li>
-                    ))}
-                </ul>
+    {messages.map((msg, index) => (
+        <li key={index}>{msg.text} - {msg.sender}</li>
+    ))}
+</ul>
             </div>
         </div>
     );
