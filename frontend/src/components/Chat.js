@@ -30,7 +30,7 @@ const Chat = () => {
 
     const fetchRooms = async () => {
         // Fetch available rooms from the server
-        const response = await fetch('http://localhost:3000/api/rooms');
+        const response = await fetch('http://localhost:3000/fetch_rooms');
         const data = await response.json();
         setRooms(data);
     };
