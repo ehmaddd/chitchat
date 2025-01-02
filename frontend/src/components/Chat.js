@@ -13,7 +13,7 @@ const Chat = () => {
     const location = useLocation(); // Hook to access location state
 
     // Access the userId passed in the state
-    const userId = localStorage.getItem('userId');
+    const [userId, setUserId] = useState(localStorage.getItem('userId'));
     console.log(userId);
 
     useEffect(() => {
@@ -123,9 +123,10 @@ const Chat = () => {
     };
 
     const handleLogout = () => {
-        // Clear authentication token or session
-        localStorage.removeItem('isAuthenticated');
-        navigate('/'); // Redirect to login page after logout
+      localStorage.setItem('isAuthenticated', false);
+      localStorage.removeItem('userId');
+      setUserId(null); // Update the state to reflect logout
+      navigate('/login');
     };
 
     const handleBackToMainPage = () => {

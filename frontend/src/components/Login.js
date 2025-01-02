@@ -22,8 +22,9 @@ const Login = () => {
       if (response.data.id) {
         setResult('Login Successful');
         setIsLoggedIn(true);
-        // Navigate to chat page and pass the user ID in state
-        navigate('/chat', { state: { userId: response.data.id } });
+        // Store userId in localStorage after successful login
+        localStorage.setItem('userId', response.data.id); // Save user ID here
+        navigate('/chat'); // Navigate to the chat page
       } else {
         setResult('Login Failed');
       }
@@ -43,10 +44,18 @@ const Login = () => {
           </p>
           <form>
             <label htmlFor="email">Email: </label>
-            <input type="text" name="email" onChange={(e) => setEmail(e.target.value)} />
+            <input
+              type="text"
+              name="email"
+              onChange={(e) => setEmail(e.target.value)}
+            />
             <br />
             <label htmlFor="password">Password: </label>
-            <input type="password" name="password" onChange={(e) => setPassword(e.target.value)} />
+            <input
+              type="password"
+              name="password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
             <br />
             <input type="submit" value="Login" onClick={handleSubmit} />
           </form>
