@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom'; // For navigation between pages
+import { useNavigate, useLocation } from 'react-router-dom'; // Import useLocation for accessing state
 import { io } from 'socket.io-client';
 
 const Chat = () => {
@@ -10,12 +10,15 @@ const Chat = () => {
     const [roomJoined, setRoomJoined] = useState(false);
     const socket = useRef(null);
     const navigate = useNavigate(); // For navigation to other pages
+    const location = useLocation(); // Hook to access location state
+
+    // Access the userId passed in the state
+    const userId = localStorage.getItem('userId');
+    console.log(userId);
 
     useEffect(() => {
-        // Check if the user is logged in (using localStorage/sessionStorage or cookies)
-        const isAuthenticated = localStorage.getItem('isAuthenticated');
-        if (!isAuthenticated) {
-            navigate('/login'); // Redirect to login if not authenticated
+        if (!userId) {
+            navigate('/login'); // Redirect to login if no userId is found
         }
 
         // Initialize socket connection
@@ -35,7 +38,7 @@ const Chat = () => {
         return () => {
             socket.current.disconnect();
         };
-    }, [navigate]);
+    }, [navigate, userId]);
 
     const fetchRooms = async () => {
         try {
@@ -102,7 +105,7 @@ const Chat = () => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ room: room, message: message }),
+                    body: JSON.stringify({ room: room, message: message, userId }),
                 });
                 console.log(response);
 
@@ -133,7 +136,9 @@ const Chat = () => {
 
     return (
         <div>
+            <button onClick={handleLogout}>LogOut</button>
             <h1>Chat</h1>
+            {userId && <p>User ID: {userId}</p>} {/* Display user ID */}
             {!roomJoined ? (
                 <div>
                     <input

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate from react-router-dom
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
-import Chat from './Chat';  // Import the Chat component
+import Chat from './Chat';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -10,13 +10,6 @@ const Login = () => {
   const [result, setResult] = useState('');
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const logout = () => {
-    setEmail('');
-    setPassword('');
-    setResult('');
-    setIsLoggedIn(false);
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,7 +54,6 @@ const Login = () => {
       ) : (
         <>
           <Chat />
-          <button onClick={logout}>LogOut</button>
         </>
       )}
     </>
