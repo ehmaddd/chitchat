@@ -93,6 +93,43 @@ app.get('/rooms/:room/messages', async (req, res) => {
     }
 });
 
+app.post('/store_messages', async (req, res) => {
+    const { room, message, senderId } = req.body;
+    console.log(room, message, senderId);
+
+    // if (!room || !message || !senderId) {
+    //     return res.status(400).send('Room, message, and senderId are required');
+    // }
+
+    // try {
+    //     // First, fetch the roomId from the rooms table
+    //     const targetroom = await pool.query('SELECT roomid FROM rooms WHERE roomname = $1', [room]);
+    //     console.log(targetroom);
+
+    //     if (targetroom.rows.length === 0) {
+    //         return res.status(404).send('Room not found');
+    //     }
+
+    //     const roomId = targetroom.rows[0].roomid;
+
+    //     // Now, store the message in the messages table
+    //     const result = await pool.query(
+    //         'INSERT INTO messages (roomid, content, userid) VALUES ($1, $2, $3) RETURNING *',
+    //         [roomId, message, senderId]
+    //     );
+    //     console.log(result);
+
+    //     // Respond with success
+    //     res.status(201).json({
+    //         message: 'Message saved successfully',
+    //         storedMessage: result.rows[0], // Return the saved message
+    //     });
+    // } catch (error) {
+    //     console.error('Error saving message:', error);
+    //     res.status(500).send('Error saving message');
+    // }
+});
+
 // Use socketio-jwt to authenticate users via their JWT token
 io.use(socketJwt.authorize({
     secret: 'your_jwt_secret',   // Your secret key

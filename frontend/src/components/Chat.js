@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom'; // For navigation between pages
 import { io } from 'socket.io-client';
 
 const Chat = () => {
@@ -8,14 +9,22 @@ const Chat = () => {
     const [rooms, setRooms] = useState([]); // List of rooms
     const [roomJoined, setRoomJoined] = useState(false);
     const socket = useRef(null);
+    const navigate = useNavigate(); // For navigation to other pages
 
     useEffect(() => {
+        // Check if the user is logged in (using localStorage/sessionStorage or cookies)
+        const isAuthenticated = localStorage.getItem('isAuthenticated');
+        if (!isAuthenticated) {
+            navigate('/login'); // Redirect to login if not authenticated
+        }
+
         // Initialize socket connection
         socket.current = io('http://localhost:3000');
 
         // Listen for incoming messages
         socket.current.on('message', (msg) => {
-            setMessages((prev) => [...prev, msg]);
+            console.log('Received message:', msg); // Debug log
+            setMessages((prev) => [...prev, msg]); // Add new message to the state
         });
 
         // Listen for room list updates
@@ -26,7 +35,7 @@ const Chat = () => {
         return () => {
             socket.current.disconnect();
         };
-    }, []);
+    }, [navigate]);
 
     const fetchRooms = async () => {
         try {
@@ -43,6 +52,7 @@ const Chat = () => {
             setRooms([]); // Fallback to an empty array on error
         }
     };
+
     useEffect(() => {
         fetchRooms();
     }, []);
@@ -69,21 +79,62 @@ const Chat = () => {
             const data = await response.json();
             setMessages(data); // Update the messages state
             console.log('Messages fetched:', data);
+            setRoom(selectedRoom); // Set the current room
+            setRoomJoined(true); // Mark room as joined
         } catch (error) {
             console.error('Error fetching messages:', error);
         }
     };
 
-    const handleSendMessage = () => {
+    const handleSendMessage = async () => {
         if (message && room) {
+            // Add the message to local state first to immediately show it in UI
+            const newMessage = { text: message, sender: 'User' };
+            setMessages((prev) => [...prev, newMessage]); // Optimistic update
+
+            // Send message to server via socket (for other clients)
             socket.current.emit('sendMessage', { roomName: room, message });
-            setMessage('');
+
+            // Send message to backend to store in DB
+            try {
+                const response = await fetch('http://localhost:3000/store_messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ room: room, message: message }),
+                });
+                console.log(response);
+
+                if (!response.ok) {
+                    console.error('Error storing message in DB:', response.statusText);
+                } else {
+                    console.log('Message successfully stored in DB');
+                }
+            } catch (error) {
+                console.error('Error sending message to backend:', error);
+            }
+
+            setMessage(''); // Clear input after sending message
         }
+    };
+
+    const handleLogout = () => {
+        // Clear authentication token or session
+        localStorage.removeItem('isAuthenticated');
+        navigate('/login'); // Redirect to login page after logout
+    };
+
+    const handleBackToMainPage = () => {
+        setRoomJoined(false); // Reset the roomJoined state to show the room list again
+        setMessages([]); // Optionally clear the messages
+        setRoom(''); // Reset the selected room
     };
 
     return (
         <div>
             <h1>Chat</h1>
+            <button onClick={handleLogout}>Logout</button>
             {!roomJoined ? (
                 <div>
                     <input
@@ -109,6 +160,7 @@ const Chat = () => {
                 </div>
             ) : (
                 <div>
+                    <button onClick={handleBackToMainPage}>Back to Room List</button>
                     <h2>Welcome to the room: {room}</h2>
                     <div>
                         <input
@@ -124,10 +176,16 @@ const Chat = () => {
             <div>
                 <h2>Messages</h2>
                 <ul>
-    {messages.map((msg, index) => (
-        <li key={index}>{msg.text} - {msg.sender}</li>
-    ))}
-</ul>
+                    {messages.length > 0 ? (
+                        messages.map((msg, index) => (
+                            <li key={index}>
+                                {msg.text} - {msg.sender}
+                            </li>
+                        ))
+                    ) : (
+                        <li>No messages yet</li>
+                    )}
+                </ul>
             </div>
         </div>
     );
