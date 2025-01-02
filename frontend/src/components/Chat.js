@@ -122,7 +122,7 @@ const Chat = () => {
     const handleLogout = () => {
         // Clear authentication token or session
         localStorage.removeItem('isAuthenticated');
-        navigate('/login'); // Redirect to login page after logout
+        navigate('/'); // Redirect to login page after logout
     };
 
     const handleBackToMainPage = () => {
@@ -134,7 +134,6 @@ const Chat = () => {
     return (
         <div>
             <h1>Chat</h1>
-            <button onClick={handleLogout}>Logout</button>
             {!roomJoined ? (
                 <div>
                     <input
@@ -173,6 +172,7 @@ const Chat = () => {
                     </div>
                 </div>
             )}
+            {(roomJoined && 
             <div>
                 <h2>Messages</h2>
                 <ul>
@@ -187,6 +187,7 @@ const Chat = () => {
                     )}
                 </ul>
             </div>
+            )}
         </div>
     );
 };
