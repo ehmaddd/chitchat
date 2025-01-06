@@ -97,9 +97,9 @@ app.post('/store_messages', async (req, res) => {
     const { room, message, userId } = req.body;
     console.log(room, message, userId);
 
-    // if (!room || !message || !senderId) {
-    //     return res.status(400).send('Room, message, and senderId are required');
-    // }
+    if (!room || !message || !userId) {
+        return res.status(400).send('Room, message, and senderId are required');
+    }
 
     // try {
     //     // First, fetch the roomId from the rooms table
