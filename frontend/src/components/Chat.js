@@ -105,7 +105,7 @@ const Chat = () => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ room: room, message: message, userId }),
+                    body: JSON.stringify({ room: room, message: message, userId: userId }),
                 });
                 console.log(response);
 
